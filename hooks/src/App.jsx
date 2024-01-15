@@ -1,12 +1,13 @@
 import React from "react";
-import OneParentComponent from "./MyUseContext/OneParentComponent";
+import { ThemeProvider } from "./TwoUseContext/ThemeContext";
+import ThemeComponent from "./TwoUseContext/ThemeComponent";
 
 function App() {
   return (
-    <div className="App">
-      <h1>React useContext Exercise</h1>
-      <OneParentComponent />
-    </div>
+    <ThemeProvider>
+      <h1>Themed App</h1>
+      <ThemeComponent />
+    </ThemeProvider>
   );
 }
 
