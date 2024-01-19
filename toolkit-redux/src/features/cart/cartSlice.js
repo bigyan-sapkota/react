@@ -1,12 +1,22 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import cartItems from "../../cartItems";
 
+const url = "https://course-api.com/react-useReducer-cart-project";
+
 const initialState = {
-  cartItems: cartItems,
+  cartItems: [],
   amount: 5,
   total: 0,
   isLoading: true,
 };
+
+export const getCartItems = createAsyncThunk("cart/getCartItems", async () => {
+  const res = await fetch(url);
+  const data = await res.json();
+  console.log("calling");
+  console.log(data);
+  return data;
+});
 
 const cartSlice = createSlice({
   name: "cart",
@@ -38,8 +48,39 @@ const cartSlice = createSlice({
       state.amount = amount;
       state.total = total;
     },
+
+    extraReducers: (builder) => {
+      builder
+        .addCase(fetchUserData.pending, (state) => {
+          console.log("pending");
+          state.status = "loading";
+        })
+        .addCase(fetchUserData.fulfilled, (state, action) => {
+          state.status = "succeeded";
+
+          state.cartItems = action.payload;
+        })
+        .addCase(fetchUserData.rejected, (state, action) => {
+          state.status = "failed";
+          state.error = action.error.message;
+        });
+    },
   },
 });
+
+// [getCartItems.pending]: (state) => {
+//   console.log("pending");
+//   state.isLoading = true;
+// },
+// [getCartItems.fulfilled]: (state, action) => {
+//   console.log(action.payload, "fulfilled");
+//   state.isLoading = false;
+//   state.cartItems = action.payload;
+// },
+// [getCartItems.rejected]: (state) => {
+//   console.log("fulfilled");
+//   state.isLoading = false;
+// },
 
 export const { clearCart, removeItem, increase, decrease, calculateTotals } =
   cartSlice.actions;
